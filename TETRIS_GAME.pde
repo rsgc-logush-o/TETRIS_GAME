@@ -13,8 +13,8 @@ boolean[][][] blockMaps =
   
   {
    {false, true},
-   {false, true},
-   {false, true},
+   {true, true},
+   {true, true},
    {false, true}
   },
   
@@ -92,7 +92,7 @@ int activeBlockX;
 int activeBlockY;
 
 int timePassed;
-int timeDiff = 1000;
+int timeDiff = 100;
 int prevTime;
 
 int prevSquares[][][];
@@ -178,7 +178,7 @@ void draw()
     {
      for(int j = 0; j < blockDimensionsY[whichBlock][rotation]; j++)
      {
-       if(j == 0)
+       if(j == 0 && blockDimensionsY[whichBlock][rotation] > 1)
        {
         if(blockMaps[whichBlock][i][j] && !blockMaps[whichBlock][i][j+1] && isTrue[activeBlockX + i][activeBlockY]) isActive = false;
        }else

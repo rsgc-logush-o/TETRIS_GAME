@@ -12,10 +12,10 @@ boolean[][][] blockMaps =
   },
   
   {
-   {false, true},
-   {true, true},
-   {true, true},
-   {false, true}
+   {true, false},
+   {true, false},
+   {true, false},
+   {true, false}
   },
   
   {
@@ -92,7 +92,7 @@ int activeBlockX;
 int activeBlockY;
 
 int timePassed;
-int timeDiff = 100;
+int timeDiff = 200;
 int prevTime;
 
 int prevSquares[][][];
@@ -122,23 +122,31 @@ void draw()
  
  if(!isActive)
  {
+   //println("isActive set false");
   whichBlock = randomBlock();
-  println(whichBlock);
+  //println(whichBlock);
+  rotation = 0;
   activeBlockX = 5;
   activeBlockY = 1;
   isActive = true;
  }
+ 
  //println(activeBlockY);
+ //println(activeBlockY);
+ //println();
+if(isActive)
+{
  for(int i = 0; i < blockDimensionsX[whichBlock][rotation]; i++)
  {
   for(int j = 0; j < blockDimensionsY[whichBlock][rotation]; j++)
   {
-    
-    isTrue[i + activeBlockX][activeBlockY - j] |= blockMaps[whichBlock][i][1-j];
-    
-  }
- }
- 
+     if(rotation == 0)isTrue[activeBlockX + i][activeBlockY + j] |= blockMaps[whichBlock][i][j];
+     else if(rotation == 1)isTrue[activeBlockX + i][activeBlockY + j] |= blockMaps[whichBlock][blockDimensionsY[whichBlock][rotation] - j - 1][i];
+     else if(rotation == 2)isTrue[activeBlockX + i][activeBlockY + j] |= blockMaps[whichBlock][i][blockDimensionsY[whichBlock][rotation] - j - 1];
+     else if(rotation == 3)isTrue[activeBlockX + i][activeBlockY + j] |= blockMaps[whichBlock][blockDimensionsY[whichBlock][rotation] - j - 1][blockDimensionsX[whichBlock][rotation] - i - 1];
+   }
+}
+}
  for(int i = 0; i < 16; i++)
  {
   for(int j = 0; j < 24; j++)
@@ -149,57 +157,89 @@ void draw()
   }
  }
  
- 
- //if(activeBlockY == 23)isActive = false;
-//println(activeBlockY+2);
- //if(isActive)
- //{
- //  for(int i = 0; i < 16; i++)
- //  {
- //    if(activeBlockY == 23)
- //    {
- //      println(126);
- //      isActive = false;
- //    }
- //    else if(isTrue[i][activeBlockY + 1])
- //    {
- //     isActive = false; 
- //    }
- //  }
- //}
- 
  if(isActive)
  {
-   if(activeBlockY == 23)isActive = false;
-   
+   if(activeBlockY == 24 - blockDimensionsY[whichBlock][rotation])isActive = false;
    else
    {
-    for(int i = 0; i < blockDimensionsX[whichBlock][rotation]; i++)
+  for(int i = 0; i < blockDimensionsX[whichBlock][rotation]; i++)
+  {
+   for(int j = 0; j < blockDimensionsY[whichBlock][rotation]; j++)
+   {
+    if(rotation == 0)
     {
-     for(int j = 0; j < blockDimensionsY[whichBlock][rotation]; j++)
+     if(j == blockDimensionsY[whichBlock][rotation] - 1)
      {
-       if(j == 0 && blockDimensionsY[whichBlock][rotation] > 1)
+      if(isTrue[activeBlockX + i][activeBlockY + j + 1] && blockMaps[whichBlock][i][j])isActive = false; 
+     }else
+     {
+      if(isTrue[activeBlockX + i][activeBlockY + j + 1] && blockMaps[whichBlock][i][j] && !blockMaps[whichBlock][i][j + 1]) isActive = false;
+     }
+    }else if(rotation == 1)
+    {
+      if(j == blockDimensionsY[whichBlock][rotation] - 1)
+      {
+       if(isTrue[activeBlockX + i][activeBlockY + j + 1] && blockMaps[whichBlock][blockDimensionsY[whichBlock][rotation] - j - 1][i])
        {
-        if(blockMaps[whichBlock][i][j] && !blockMaps[whichBlock][i][j+1] && isTrue[activeBlockX + i][activeBlockY]) isActive = false;
-       }else
-       {
-        if(blockMaps[whichBlock][i][j] && isTrue[activeBlockX + i][activeBlockY+1])isActive = false;
+         println(1);
+       isActive = false;
        }
+      }else
+      {
+       
+       if(isTrue[activeBlockX + i][activeBlockY + j + 1] && blockMaps[whichBlock][blockDimensionsY[whichBlock][rotation] - j - 1][i] && !blockMaps[whichBlock][blockDimensionsY[whichBlock][rotation] - j - 2][i])
+       {
+       isActive = false; 
+       }
+      }
+    }else if(rotation == 2)
+    {
+     if(j == blockDimensionsY[whichBlock][rotation] - 1)
+     {
+      if(isTrue[activeBlockX + i][activeBlockY + j + 1] && blockMaps[whichBlock][i][blockDimensionsY[whichBlock][rotation] - j - 1]) isActive = false;
+     }else
+     {
+      if(isTrue[activeBlockX + i][activeBlockY + j + 1] && blockMaps[whichBlock][i][blockDimensionsY[whichBlock][rotation] - j - 1] && !blockMaps[whichBlock][i][blockDimensionsY[whichBlock][rotation] - j - 2])isActive = false; 
+     }
+    }else if(rotation == 3)
+    {
+     if(j == blockDimensionsY[whichBlock][rotation] - 1)
+     {
+       println('k');
+      if(isTrue[activeBlockX + i][activeBlockY + j] && blockMaps[whichBlock][blockDimensionsY[whichBlock][rotation] - j - 1][blockDimensionsX[whichBlock][rotation] - i - 1])
+      {
+        println("wee" + j);
+      //isActive = false; 
+      }
+     }else
+     {
+       //println(blockDimensionsY[whichBlock][rotation] - j - 2);
+      if(isTrue[activeBlockX + i][activeBlockY + j] && blockMaps[whichBlock][blockDimensionsY[whichBlock][rotation] - j - 1][blockDimensionsX[whichBlock][rotation] - i - 1] && !blockMaps[whichBlock][blockDimensionsY[whichBlock][rotation] - j - 2][blockDimensionsX[whichBlock][rotation] - i - 1])
+      {
+        println(isTrue[activeBlockX + i][activeBlockY + j]);
+        println(blockMaps[whichBlock][blockDimensionsY[whichBlock][rotation] - j - 1][blockDimensionsX[whichBlock][rotation] - i - 1]);
+        println(blockMaps[whichBlock][blockDimensionsY[whichBlock][rotation] - j - 2][blockDimensionsX[whichBlock][rotation] - i - 1]);
+      //isActive = false;
+      }
      }
     }
    }
+  }
+   }
  }
- 
  
  if(isActive)
  {
-   for(int i = 0; i < 4; i++)
+  for(int i = 0; i < blockDimensionsX[whichBlock][rotation]; i++)
+  {
+   for(int j = 0; j < blockDimensionsY[whichBlock][rotation]; j++)
    {
-    for(int j = 0; j < 2; j++)
-     { 
-      if(blockMaps[whichBlock][i][1-j])isTrue[i + activeBlockX][activeBlockY - j] = false;
-     }
-    } 
+    if(rotation == 0) isTrue[activeBlockX + i][activeBlockY + j] &= !blockMaps[whichBlock][i][j]; 
+    else if(rotation == 1)isTrue[activeBlockX + i][activeBlockY + j] &= !blockMaps[whichBlock][blockDimensionsY[whichBlock][rotation] - j - 1][i];
+    else if(rotation == 2)isTrue[activeBlockX + i][activeBlockY + j] &= !blockMaps[whichBlock][i][blockDimensionsY[whichBlock][rotation] - j - 1];
+    else if(rotation == 3)isTrue[activeBlockX + i][activeBlockY + j] &= !blockMaps[whichBlock][blockDimensionsY[whichBlock][rotation] - j - 1][blockDimensionsX[whichBlock][rotation] - i - 1];
+   }
+  }
  }
  
  
@@ -207,15 +247,15 @@ void draw()
  if(timePassed - prevTime > timeDiff && isActive)
  {
    
-   if(activeBlockY < 23)
+   if(activeBlockY != 24 - blockDimensionsY[whichBlock][rotation])
    {
      
      activeBlockY++;
    }
    else 
    {
-     println(142);
-     isActive = false;
+     //println(142);
+     //isActive = false;
    }
    prevTime = millis();
  }
